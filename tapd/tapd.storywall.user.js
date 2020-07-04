@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         优化tapd故事墙
 // @namespace    https://github.com/Dcatfly/Tampermonkey.git
-// @version      0.1
-// @description  1. 在tapd故事墙中添加story预估时间 \r 2. 在故事墙中增加时间统计
+// @version      0.2
+// @description  1. 在tapd故事墙中添加story预估时间 2. 在故事墙中增加【新需求】与【实现中】的时间统计
 // @author       Dcatfly
 // @match        https://www.tapd.cn/*/storywalls*
 // ==/UserScript==
