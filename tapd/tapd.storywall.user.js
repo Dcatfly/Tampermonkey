@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         优化tapd故事墙
 // @namespace    https://github.com/Dcatfly/Tampermonkey.git
-// @version      0.2
-// @description  1. 在tapd故事墙中添加story预估时间 2. 在故事墙中增加【新需求】与【实现中】的时间统计
+// @version      0.3
+// @description  1. 在tapd故事墙中添加story预估时间 2. 在故事墙中增加【新需求】与【实现中】的时间统计 3.在故事墙中显示custom_field_one字段值。
 // @author       Dcatfly
 // @match        https://www.tapd.cn/*/storywalls*
 // ==/UserScript==
@@ -13,6 +13,7 @@
     { label: "新需求", key: "new" },
     { label: "实现中", key: "developing" },
   ];
+  const reopenField = "custom_field_one";
   window.onload = function () {
     document.querySelectorAll("#resource_table > tbody > tr").forEach((tr) => {
       const user = tr.querySelector("td.charge > div > ul");
@@ -28,9 +29,17 @@
               if (data.code === 200) {
                 const title = li.querySelector(".note_head");
                 const effort = data.data.story.effort;
+                const reopen = data.data.story[reopenField];
 
                 const span = document.createElement("span");
                 span.append(`${effort}人时`);
+                if (Number(reopen)) {
+                  const reopenSpan = document.createElement("span");
+                  reopenSpan.style.color = "red";
+                  span.append("|");
+                  reopenSpan.append(`${reopen}次`);
+                  span.append(reopenSpan);
+                }
 
                 title.style.display = "flex";
                 title.style.justifyContent = "space-between";
