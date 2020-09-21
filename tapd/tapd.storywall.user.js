@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         优化tapd故事墙
 // @namespace    https://github.com/Dcatfly/Tampermonkey.git
-// @version      0.4
-// @description  1. 在tapd故事墙中添加story预估时间 2. 在故事墙中增加【新需求】与【实现中】的时间统计 3.在故事墙中显示custom_field_one字段值。
+// @version      0.5
+// @description  1. 在tapd故事墙中添加story预估时间 2. 在故事墙中增加【新需求】与【实现中】的时间统计 3.在故事墙中显示custom_field_one字段值。4.显示时间统计时增加高优先级高亮显示
 // @author       Dcatfly
 // @match        https://www.tapd.cn/*/storywalls*
 // ==/UserScript==
@@ -14,6 +14,8 @@
     { label: "实现中", key: "developing" },
   ];
   const reopenField = "custom_field_one";
+  const high_priority = "High";
+  const high_priority_color = "#fe5050";
   window.onload = function () {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -34,6 +36,7 @@
                       const title = li.querySelector(".note_head");
                       const effort = data.data.story.effort;
                       const reopen = data.data.story[reopenField];
+                      const priority = data.data.story.priority;
 
                       const span = document.createElement("span");
                       span.append(`${effort}人时`);
@@ -49,7 +52,10 @@
                       title.style.justifyContent = "space-between";
                       title.append(span);
 
-                      return { [type]: Number(effort) };
+                      return {
+                        [type]: Number(effort),
+                        [`${type}_${priority}`]: Number(effort),
+                      };
                     }
                   });
               })
@@ -63,9 +69,20 @@
               timeCountArr.forEach(({ label, key }) => {
                 const timeCount = timeCounts[key];
                 if (timeCount) {
+                  const highPriorityCount =
+                    timeCounts[`${key}_${high_priority}`];
                   const li = document.createElement("li");
                   li.style.overflow = "unset";
-                  li.append(`${label}: ${timeCount}人时`);
+                  li.append(`${label}: `);
+                  if (highPriorityCount) {
+                    const highCountSpan = document.createElement("span");
+                    highCountSpan.style.color = high_priority_color;
+                    highCountSpan.append(highPriorityCount);
+                    li.append(highCountSpan);
+                    li.append("/");
+                  }
+                  li.append(`${timeCount}人时`);
+
                   user.append(li);
                 }
               });
